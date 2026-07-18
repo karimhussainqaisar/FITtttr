@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
@@ -40,6 +41,107 @@ function getGeminiClient(): GoogleGenAI {
 // API Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'FitLife AI Service' });
+});
+
+// Helper to read and write articles from/to filesystem database
+const articlesFilePath = path.join(process.cwd(), 'articles.json');
+
+function readArticlesFromFile() {
+  try {
+    if (fs.existsSync(articlesFilePath)) {
+      const data = fs.readFileSync(articlesFilePath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error('Error reading articles file:', err);
+  }
+  return [];
+}
+
+function writeArticlesToFile(articles: any[]) {
+  try {
+    fs.writeFileSync(articlesFilePath, JSON.stringify(articles, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Error writing articles file:', err);
+    return false;
+  }
+}
+
+// Retrieve all articles from server database
+app.get('/api/blog', (req, res) => {
+  const articles = readArticlesFromFile();
+  res.json(articles);
+});
+
+// Publish a new article to server database
+app.post('/api/blog', (req, res) => {
+  try {
+    const { title, author, category, readTime, summary, tags, content, imageUrl, password } = req.body;
+
+    const correctPassword = process.env.BLOG_PASSWORD || '123456';
+    if (!password || password !== correctPassword) {
+      res.status(401).json({ error: 'Access Denied: Incorrect authorization password.' });
+      return;
+    }
+
+    if (!title || !author || !summary || !content) {
+      res.status(400).json({ error: 'Please fill out all required fields.' });
+      return;
+    }
+
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-');
+    
+    const id = `b_custom_${Date.now()}`;
+    const publishedAt = new Date().toISOString().split('T')[0];
+
+    const newArticle = {
+      id,
+      title: title.trim(),
+      slug,
+      category,
+      summary: summary.trim(),
+      content: content.trim(),
+      readTime: Number(readTime) || 5,
+      tags: tags && tags.length > 0 ? tags : ['Science', 'Performance'],
+      author: author.trim(),
+      publishedAt,
+      imageUrl: imageUrl || ''
+    };
+
+    const articles = readArticlesFromFile();
+    articles.unshift(newArticle);
+    writeArticlesToFile(articles);
+
+    res.json({ success: true, article: newArticle });
+  } catch (error: any) {
+    console.error('Error publishing blog article:', error);
+    res.status(500).json({ error: 'An internal server error occurred while publishing.' });
+  }
+});
+
+// Delete an article from server database
+app.delete('/api/blog/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    let articles = readArticlesFromFile();
+    const originalLength = articles.length;
+    articles = articles.filter((art: any) => art.id !== id);
+    
+    if (articles.length === originalLength) {
+      res.status(404).json({ error: 'Article not found.' });
+      return;
+    }
+
+    writeArticlesToFile(articles);
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('Error deleting blog article:', error);
+    res.status(500).json({ error: 'An internal server error occurred while deleting.' });
+  }
 });
 
 app.post('/api/chat', async (req, res) => {

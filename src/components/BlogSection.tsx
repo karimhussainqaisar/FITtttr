@@ -26,8 +26,27 @@ export default function BlogSection() {
   // Deletion confirmation state
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-  // Load articles from localStorage on mount
+  // Load articles from the server database on mount (with localStorage fallback)
   useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const res = await fetch('/api/blog');
+      if (res.ok) {
+        const data = await res.json();
+        setArticles(data);
+        localStorage.setItem('fitlife_blog_articles', JSON.stringify(data));
+      } else {
+        loadFallbackArticles();
+      }
+    } catch (e) {
+      loadFallbackArticles();
+    }
+  };
+
+  const loadFallbackArticles = () => {
     const saved = localStorage.getItem('fitlife_blog_articles');
     if (saved) {
       try {
@@ -39,48 +58,47 @@ export default function BlogSection() {
       setArticles(BLOG_ARTICLES);
       localStorage.setItem('fitlife_blog_articles', JSON.stringify(BLOG_ARTICLES));
     }
-  }, []);
+  };
 
   const filteredArticles = articles.filter(art => {
     if (activeCategory === 'all') return true;
     return art.category === activeCategory;
   });
 
-  const handleDelete = (id: string) => {
-    const updated = articles.filter(art => art.id !== id);
-    setArticles(updated);
-    localStorage.setItem('fitlife_blog_articles', JSON.stringify(updated));
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`/api/blog/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        const updated = articles.filter(art => art.id !== id);
+        setArticles(updated);
+        localStorage.setItem('fitlife_blog_articles', JSON.stringify(updated));
+      } else {
+        setError('Failed to delete the article from server database.');
+      }
+    } catch (e) {
+      // Fallback local delete
+      const updated = articles.filter(art => art.id !== id);
+      setArticles(updated);
+      localStorage.setItem('fitlife_blog_articles', JSON.stringify(updated));
+    }
     setConfirmDeleteId(null);
     if (selectedArticle && selectedArticle.id === id) {
       setSelectedArticle(null);
     }
   };
 
-  const handlePublish = (e: React.FormEvent) => {
+  const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    // Check password protection
-    if (password !== '123456') {
-      setError('Access Denied: Incorrect authorization password.');
-      return;
-    }
 
     // Validate inputs
     if (!title.trim() || !author.trim() || !summary.trim() || !content.trim()) {
       setError('Please fill out all required fields.');
       return;
     }
-
-    // Create unique slug & ID
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-');
-    
-    const id = `b_custom_${Date.now()}`;
-    const publishedAt = new Date().toISOString().split('T')[0];
 
     // Split tags by comma
     const tagList = tags
@@ -99,42 +117,59 @@ export default function BlogSection() {
 
     const finalImageUrl = imageUrl.trim() || curatedDefaults[category] || curatedDefaults.nutrition;
 
-    const newArticle: BlogArticle = {
-      id,
-      title: title.trim(),
-      slug,
-      category,
-      summary: summary.trim(),
-      content: content.trim(),
-      readTime: Number(readTime) || 5,
-      tags: tagList.length > 0 ? tagList : ['Science', 'Performance'],
-      author: author.trim(),
-      publishedAt,
-      imageUrl: finalImageUrl
-    };
+    // Send the publish payload to server API (password is processed on the server-side only)
+    try {
+      const res = await fetch('/api/blog', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title.trim(),
+          author: author.trim(),
+          category,
+          readTime: Number(readTime) || 5,
+          summary: summary.trim(),
+          tags: tagList.length > 0 ? tagList : ['Science', 'Performance'],
+          content: content.trim(),
+          imageUrl: finalImageUrl,
+          password
+        })
+      });
 
-    const updatedArticles = [newArticle, ...articles];
-    setArticles(updatedArticles);
-    localStorage.setItem('fitlife_blog_articles', JSON.stringify(updatedArticles));
+      const result = await res.json();
 
-    // Clear form states
-    setTitle('');
-    setAuthor('');
-    setCategory('nutrition');
-    setReadTime(5);
-    setSummary('');
-    setTags('');
-    setContent('');
-    setImageUrl('');
-    setPassword('');
-    setSuccess('Article published successfully!');
+      if (!res.ok) {
+        setError(result.error || 'Access Denied: Incorrect authorization password.');
+        return;
+      }
 
-    // Close publisher and view the newly published article directly for high-fidelity response
-    setTimeout(() => {
-      setIsAddingArticle(false);
-      setSuccess('');
-      setSelectedArticle(newArticle);
-    }, 800);
+      const newArticle = result.article;
+      const updatedArticles = [newArticle, ...articles];
+      setArticles(updatedArticles);
+      localStorage.setItem('fitlife_blog_articles', JSON.stringify(updatedArticles));
+
+      // Clear form states
+      setTitle('');
+      setAuthor('');
+      setCategory('nutrition');
+      setReadTime(5);
+      setSummary('');
+      setTags('');
+      setContent('');
+      setImageUrl('');
+      setPassword('');
+      setSuccess('Article published successfully!');
+
+      // Close publisher and view the newly published article directly
+      setTimeout(() => {
+        setIsAddingArticle(false);
+        setSuccess('');
+        setSelectedArticle(newArticle);
+      }, 800);
+    } catch (err: any) {
+      setError('A network error occurred. Failed to connect to server database.');
+    }
   };
 
   const getCategoryLabel = (cat: string) => {
@@ -380,7 +415,7 @@ export default function BlogSection() {
                     required
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    placeholder="Enter 123456 to publish..."
+                    placeholder="Enter secret password..."
                     className="w-full text-xs bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl pl-9 pr-3 py-2 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
