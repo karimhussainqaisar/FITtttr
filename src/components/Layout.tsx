@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Moon, Sun, Flame, Scale, LogOut, Menu, X, ShieldCheck } from 'lucide-react';
+import { Sparkles, Moon, Sun, Flame, Scale, LogOut, Menu, X, ShieldCheck, Cloud } from 'lucide-react';
 import { UserProfile } from '../types';
 
 interface LayoutProps {
@@ -8,9 +8,19 @@ interface LayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onReset: () => void;
+  cloudUserEmail: string | null;
+  onOpenSyncModal: () => void;
 }
 
-export default function Layout({ children, profile, activeTab, onTabChange, onReset }: LayoutProps) {
+export default function Layout({ 
+  children, 
+  profile, 
+  activeTab, 
+  onTabChange, 
+  onReset,
+  cloudUserEmail,
+  onOpenSyncModal
+}: LayoutProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('fitlife_theme');
     return (saved === 'light' || saved === 'dark') ? saved : 'dark';
@@ -87,6 +97,26 @@ export default function Layout({ children, profile, activeTab, onTabChange, onRe
                 <Scale className="w-3.5 h-3.5 text-emerald-500" />
                 <span>{profile.weight} kg → {profile.targetWeight} kg</span>
               </div>
+            )}
+
+            {/* Cloud Sync Button */}
+            {profile && (
+              <button
+                id="btn_cloud_sync_toggle"
+                onClick={onOpenSyncModal}
+                className={`px-2.5 py-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-semibold ${
+                  cloudUserEmail
+                    ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10'
+                    : 'border-neutral-250 dark:border-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-150 hover:bg-neutral-100 dark:hover:bg-neutral-900'
+                }`}
+                title={cloudUserEmail ? `Logged in as ${cloudUserEmail}` : 'Sync across devices'}
+              >
+                <Cloud className={`w-4 h-4 ${cloudUserEmail ? 'text-emerald-500 fill-emerald-500/10' : ''}`} />
+                <span className="hidden sm:inline">
+                  {cloudUserEmail ? 'Synced' : 'Cloud Sync'}
+                </span>
+                {cloudUserEmail && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+              </button>
             )}
 
             {/* Theme switcher */}
