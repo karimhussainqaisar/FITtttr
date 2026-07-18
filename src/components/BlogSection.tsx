@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BLOG_ARTICLES } from '../data/blog';
 import { BlogArticle } from '../types';
-import { Calendar, User, Clock, ChevronRight, BookOpen, Plus, Lock, X, FileText, Check, AlertTriangle } from 'lucide-react';
+import { Calendar, User, Clock, ChevronRight, BookOpen, Plus, Lock, X, FileText, Check, AlertTriangle, Trash2 } from 'lucide-react';
 
 export default function BlogSection() {
   const [articles, setArticles] = useState<BlogArticle[]>([]);
@@ -18,9 +18,13 @@ export default function BlogSection() {
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Deletion confirmation state
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Load articles from localStorage on mount
   useEffect(() => {
@@ -41,6 +45,16 @@ export default function BlogSection() {
     if (activeCategory === 'all') return true;
     return art.category === activeCategory;
   });
+
+  const handleDelete = (id: string) => {
+    const updated = articles.filter(art => art.id !== id);
+    setArticles(updated);
+    localStorage.setItem('fitlife_blog_articles', JSON.stringify(updated));
+    setConfirmDeleteId(null);
+    if (selectedArticle && selectedArticle.id === id) {
+      setSelectedArticle(null);
+    }
+  };
 
   const handlePublish = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +88,17 @@ export default function BlogSection() {
       .map(t => t.trim())
       .filter(t => t.length > 0);
 
+    // Dynamic curated fallback images based on selected category
+    const curatedDefaults: Record<string, string> = {
+      fat_loss: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=800&auto=format&fit=crop&q=80',
+      muscle_building: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&auto=format&fit=crop&q=80',
+      nutrition: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&auto=format&fit=crop&q=80',
+      supplements: 'https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=800&auto=format&fit=crop&q=80',
+      lifestyle: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800&auto=format&fit=crop&q=80',
+    };
+
+    const finalImageUrl = imageUrl.trim() || curatedDefaults[category] || curatedDefaults.nutrition;
+
     const newArticle: BlogArticle = {
       id,
       title: title.trim(),
@@ -84,7 +109,8 @@ export default function BlogSection() {
       readTime: Number(readTime) || 5,
       tags: tagList.length > 0 ? tagList : ['Science', 'Performance'],
       author: author.trim(),
-      publishedAt
+      publishedAt,
+      imageUrl: finalImageUrl
     };
 
     const updatedArticles = [newArticle, ...articles];
@@ -99,6 +125,7 @@ export default function BlogSection() {
     setSummary('');
     setTags('');
     setContent('');
+    setImageUrl('');
     setPassword('');
     setSuccess('Article published successfully!');
 
@@ -273,6 +300,21 @@ export default function BlogSection() {
                 </div>
               </div>
 
+              {/* Cover Image URL */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase font-mono tracking-wider font-extrabold text-neutral-400 dark:text-neutral-500 block">
+                  Cover Image URL (Optional - leave blank for automated curated illustration)
+                </label>
+                <input
+                  id="input_blog_imageurl"
+                  type="url"
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  placeholder="e.g., https://images.unsplash.com/photo-..."
+                  className="w-full text-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2.5 text-neutral-800 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
               {/* Summary */}
               <div className="space-y-1.5">
                 <label className="text-[10px] uppercase font-mono tracking-wider font-extrabold text-neutral-400 dark:text-neutral-500 block">
@@ -377,14 +419,44 @@ export default function BlogSection() {
             exit={{ opacity: 0, y: -10 }}
             className="bg-white dark:bg-neutral-950 p-6 md:p-8 rounded-3xl border border-neutral-150 dark:border-neutral-850 shadow-md space-y-6 max-w-3xl mx-auto"
           >
-            {/* Breadcrumb back */}
-            <button
-              id="btn_back_to_blog_list"
-              onClick={() => setSelectedArticle(null)}
-              className="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              ← Back to Article Feed
-            </button>
+            {/* Breadcrumb back and delete option */}
+            <div className="flex justify-between items-center flex-wrap gap-2">
+              <button
+                id="btn_back_to_blog_list"
+                onClick={() => setSelectedArticle(null)}
+                className="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                ← Back to Article Feed
+              </button>
+
+              {confirmDeleteId === selectedArticle.id ? (
+                <div className="flex items-center gap-2 bg-red-500/10 dark:bg-red-500/20 px-3 py-1.5 rounded-xl border border-red-500/25">
+                  <span className="text-[11px] font-bold text-red-600 dark:text-red-400">Confirm Deletion?</span>
+                  <button
+                    id="btn_confirm_delete_detail_yes"
+                    onClick={() => handleDelete(selectedArticle.id)}
+                    className="px-2 py-0.5 bg-red-500 hover:bg-red-600 text-white rounded text-[10px] font-extrabold cursor-pointer transition"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    id="btn_confirm_delete_detail_no"
+                    onClick={() => setConfirmDeleteId(null)}
+                    className="px-2 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 rounded text-[10px] font-extrabold cursor-pointer transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  id={`btn_delete_article_detail_${selectedArticle.id}`}
+                  onClick={() => setConfirmDeleteId(selectedArticle.id)}
+                  className="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1 cursor-pointer bg-red-500/5 hover:bg-red-500/10 px-2.5 py-1.5 rounded-xl border border-red-500/10 transition"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete Article
+                </button>
+              )}
+            </div>
 
             {/* Title Block */}
             <div className="space-y-3">
@@ -401,6 +473,18 @@ export default function BlogSection() {
                 <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {selectedArticle.readTime} min read</span>
               </div>
             </div>
+
+            {/* Premium Article Cover Banner */}
+            {selectedArticle.imageUrl && (
+              <div className="w-full h-64 md:h-80 rounded-2xl overflow-hidden relative bg-neutral-100 dark:bg-neutral-900 shadow-inner">
+                <img
+                  src={selectedArticle.imageUrl}
+                  alt={selectedArticle.title}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
 
             {/* Content Display Engine */}
             <div className="prose dark:prose-invert max-w-none text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed space-y-4 border-t border-neutral-100 dark:border-neutral-850 pt-6">
@@ -454,33 +538,80 @@ export default function BlogSection() {
                 <div
                   key={art.id}
                   id={`article_card_${art.id}`}
-                  className="bg-white dark:bg-neutral-950 p-6 rounded-2xl border border-neutral-150 dark:border-neutral-850 hover:border-neutral-300 dark:hover:border-neutral-750 transition flex flex-col justify-between"
+                  className="bg-white dark:bg-neutral-950 rounded-2xl border border-neutral-150 dark:border-neutral-850 hover:border-neutral-300 dark:hover:border-neutral-750 transition flex flex-col justify-between overflow-hidden relative shadow-sm"
                 >
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-[10px] font-mono text-neutral-400">
-                      <span className="px-2 py-0.5 font-black uppercase rounded bg-neutral-100 dark:bg-neutral-900 text-neutral-500">
-                        {getCategoryLabel(art.category)}
-                      </span>
-                      <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-emerald-500" /> {art.readTime} min read</span>
+                  {/* Card Cover Image */}
+                  {art.imageUrl && (
+                    <div className="w-full h-44 relative overflow-hidden bg-neutral-100 dark:bg-neutral-900 shrink-0">
+                      <img
+                        src={art.imageUrl}
+                        alt={art.title}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+
+                  {/* Card Content body */}
+                  <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center text-[10px] font-mono text-neutral-400">
+                        <span className="px-2 py-0.5 font-black uppercase rounded bg-neutral-100 dark:bg-neutral-900 text-neutral-500">
+                          {getCategoryLabel(art.category)}
+                        </span>
+                        <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5 text-emerald-500" /> {art.readTime} min read</span>
+                      </div>
+
+                      <h4 className="text-lg font-extrabold text-neutral-800 dark:text-neutral-100 leading-snug tracking-tight line-clamp-2">
+                        {art.title}
+                      </h4>
+                      <p className="text-xs text-neutral-500 line-clamp-3 leading-relaxed font-medium">
+                        {art.summary}
+                      </p>
                     </div>
 
-                    <h4 className="text-lg font-extrabold text-neutral-800 dark:text-neutral-100 leading-snug tracking-tight line-clamp-2">
-                      {art.title}
-                    </h4>
-                    <p className="text-xs text-neutral-500 line-clamp-3 leading-relaxed">
-                      {art.summary}
-                    </p>
-                  </div>
+                    <div className="border-t border-neutral-50 dark:border-neutral-850 pt-4 flex items-center justify-between text-xs">
+                      <span className="font-mono text-neutral-400 text-[10px] truncate max-w-[120px]">By {art.author}</span>
+                      
+                      <div className="flex items-center gap-3 shrink-0">
+                        {confirmDeleteId === art.id ? (
+                          <div className="flex items-center gap-1.5 bg-red-500/10 px-2 py-1 rounded-lg border border-red-500/20">
+                            <span className="text-[9px] font-black text-red-500 uppercase">Sure?</span>
+                            <button
+                              id={`btn_confirm_delete_yes_${art.id}`}
+                              onClick={(e) => { e.stopPropagation(); handleDelete(art.id); }}
+                              className="px-1.5 py-0.5 bg-red-500 hover:bg-red-600 text-white rounded text-[8px] font-black cursor-pointer transition"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              id={`btn_confirm_delete_no_${art.id}`}
+                              onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
+                              className="px-1.5 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 rounded text-[8px] font-black cursor-pointer transition"
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            id={`btn_delete_article_${art.id}`}
+                            onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(art.id); }}
+                            className="p-1.5 text-neutral-400 hover:text-red-500 rounded-lg hover:bg-red-500/10 transition cursor-pointer"
+                            title="Delete Article"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
 
-                  <div className="border-t border-neutral-50 dark:border-neutral-850 pt-4 mt-4 flex items-center justify-between text-xs">
-                    <span className="font-mono text-neutral-400 text-[10px]">By {art.author}</span>
-                    <button
-                      id={`btn_read_article_${art.id}`}
-                      onClick={() => setSelectedArticle(art)}
-                      className="font-bold text-emerald-500 hover:underline flex items-center gap-0.5 cursor-pointer"
-                    >
-                      Read Science <ChevronRight className="w-4 h-4" />
-                    </button>
+                        <button
+                          id={`btn_read_article_${art.id}`}
+                          onClick={() => setSelectedArticle(art)}
+                          className="font-bold text-emerald-500 hover:underline flex items-center gap-0.5 cursor-pointer"
+                        >
+                          Read Science <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))

@@ -214,6 +214,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 7,
     difficulty: 'beginner',
     benefits: ['Establishes stable insulin levels', 'Teaches portion control', 'Eliminates water bloat'],
+    imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Oatmeal with berries', foods: [getFood('f5', '40g'), getFood('f7', '100g')] }
@@ -237,6 +238,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 14,
     difficulty: 'beginner',
     benefits: ['Activates thyroid hormones', 'Keeps mental fog at bay', 'Preserves muscular mass'],
+    imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Scrambled eggs with spinach', foods: [getFood('f3', '2 eggs'), getFood('f14', '100g')] }
@@ -260,6 +262,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 30,
     difficulty: 'beginner',
     benefits: ['Reduces systemic inflammation', 'Improves digestive speed', 'Reduces visceral belly fat'],
+    imageUrl: 'https://images.unsplash.com/photo-1543353071-10c8ba85a904?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Protein Oatmeal', foods: [getFood('f5', '50g'), getFood('f15', '20g')] }
@@ -285,6 +288,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 14,
     difficulty: 'advanced',
     benefits: ['Rapid fat oxidation', 'Suppresses hunger hormones', 'High steady energy levels'],
+    imageUrl: 'https://images.unsplash.com/photo-1522037299833-246485724249?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Eggs fried in butter with avocado', foods: [getFood('f3', '2 eggs'), getFood('f4', '100g')] }
@@ -308,6 +312,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 14,
     difficulty: 'intermediate',
     benefits: ['Fits standard home cooking', 'Rich in antioxidant spices', 'Keeps diet culturally relevant'],
+    imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Egg white palak omelette and half roti', foods: [getFood('f3', '3 egg whites'), getFood('f14', '50g'), getFood('f11', '1 half roti')] }
@@ -331,6 +336,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 30,
     difficulty: 'beginner',
     benefits: ['Superb for cardiovascular system', 'Longevity promotion', 'No feelings of deprivation'],
+    imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Greek yogurt with almonds and a boiled egg', foods: [getFood('f7', '150g'), getFood('f8', '15g'), getFood('f3', '1 egg')] }
@@ -356,6 +362,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 30,
     difficulty: 'beginner',
     benefits: ['Triggers rapid protein synthesis', 'Increases muscular glycogen storage', 'Overcomes hardgainer genetics'],
+    imageUrl: 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Double Oats with peanut butter', foods: [getFood('f5', '80g'), getFood('f10', '30g')] }
@@ -388,6 +395,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 30,
     difficulty: 'intermediate',
     benefits: ['Supports extreme muscle hypertrophy', 'Excellent cellular recovery', 'Increases natural growth hormones'],
+    imageUrl: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Egg white omelet and Oats', foods: [getFood('f3', '4 egg whites'), getFood('f5', '60g')] }
@@ -420,6 +428,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 14,
     difficulty: 'beginner',
     benefits: ['Easy to procure locally', 'High calorie density', 'Rich in natural spices like turmeric'],
+    imageUrl: 'https://images.unsplash.com/photo-1601050690597-df056fb49785?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Whole wheat paratha and egg bhurji', foods: [getFood('f11', '1.5 chapati'), getFood('f3', '3 eggs')] }
@@ -452,6 +461,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 14,
     difficulty: 'intermediate',
     benefits: ['Triggers cellular autophagy', 'Maximizes human growth hormone (HGH)', 'Drastically drops insulin spikes'],
+    imageUrl: 'https://images.unsplash.com/photo-1506084868230-bb9d95c24759?w=800&auto=format&fit=crop&q=80',
     meals: {
       'Fast Period (16 Hours)': [
         { name: 'Black Coffee, Green Tea, or Water', foods: [getFood('f14', '0g')] }
@@ -475,6 +485,7 @@ export const DIET_PLANS: DietPlan[] = [
     durationDays: 30,
     difficulty: 'beginner',
     benefits: ['Sustained amino acid release', 'Extremely high antioxidant density', 'Optimizes digestive microbiome'],
+    imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&auto=format&fit=crop&q=80',
     meals: {
       Breakfast: [
         { name: 'Thick Protein Oats with peanut butter', foods: [getFood('f5', '65g'), getFood('f10', '25g')] }

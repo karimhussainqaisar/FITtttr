@@ -48,6 +48,7 @@ export interface DietPlan {
     [key: string]: Meal[]; // e.g. "Breakfast", "Morning Snack", "Lunch", "Pre-Workout", "Post-Workout", "Dinner", "Before Sleep"
   };
   benefits: string[];
+  imageUrl?: string;
 }
 
 export interface Exercise {
@@ -101,6 +102,7 @@ export interface BlogArticle {
   tags: string[];
   author: string;
   publishedAt: string;
+  imageUrl?: string;
 }
 
 export interface DailyChallenge {

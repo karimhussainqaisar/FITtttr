@@ -7,6 +7,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     slug: 'science-of-caloric-deficit',
     category: 'fat_loss',
     summary: 'Explore the thermodynamic laws of energy balance, metabolic adaptation, and why extreme caloric restriction often backfires.',
+    imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
     content: `
 ### Energy Balance and the First Law of Thermodynamics
 
@@ -44,6 +45,7 @@ For healthy, sustainable, long-term fat loss, aim for a **moderate caloric defic
     slug: 'hypertrophy-training-demystified',
     category: 'muscle_building',
     summary: 'Understand the biological pathways behind skeletal muscle hypertrophy: mechanical tension, metabolic stress, and muscle damage.',
+    imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
     content: `
 ### How Muscle Growth Occurs (Hypertrophy)
 
@@ -78,6 +80,7 @@ For optimal muscle hypertrophy, research suggests training each muscle group **2
     slug: 'truth-about-micronutrients',
     category: 'nutrition',
     summary: 'Beyond calories and macros, discover how key micronutrients regulate energy production, joint integrity, and cognitive focus.',
+    imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&auto=format&fit=crop&q=80',
     content: `
 ### The Overlooked Foundation of Fitness
 
