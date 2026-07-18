@@ -201,5 +201,144 @@ export const HEALTHY_RECIPES: Recipe[] = [
       'Store in an airtight container in the freezer or fridge for a quick pre-workout bite.'
     ],
     imageUrl: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'r8',
+    title: 'Anabolic Strawberry Berry-Blast Shake',
+    category: 'smoothies',
+    dietTags: ['high_protein', 'weight_loss', 'smoothies'],
+    prepTime: 5,
+    cookTime: 0,
+    difficulty: 'easy',
+    calories: 310,
+    protein: 34,
+    carbs: 32,
+    fat: 3,
+    ingredients: [
+      '1.5 scoops (45g) Strawberry Whey Isolate',
+      '100g frozen mixed berries',
+      '250ml unsweetened almond milk',
+      '150g fat-free Greek yogurt',
+      '1 tbsp chia seeds'
+    ],
+    instructions: [
+      'Add the unsweetened almond milk and Greek yogurt to your blender first.',
+      'Add the strawberry whey protein, frozen mixed berries, and chia seeds.',
+      'Blend on high speed for 40-50 seconds until completely smooth.',
+      'Pour into a tall shaker bottle and enjoy immediately as a refreshing post-workout fuel.'
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1553530979-7ee52a2670c4?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'r9',
+    title: 'Baked Lemon Garlic Seabass Fillet',
+    category: 'dinner',
+    dietTags: ['mediterranean', 'high_protein', 'weight_loss'],
+    prepTime: 10,
+    cookTime: 12,
+    difficulty: 'medium',
+    calories: 350,
+    protein: 41,
+    carbs: 6,
+    fat: 14,
+    ingredients: [
+      '180g fresh Seabass or Cod fillet',
+      '1 tbsp extra virgin olive oil',
+      '3 cloves garlic (sliced thin)',
+      '1 tbsp fresh squeezed lemon juice',
+      '100g asparagus spears',
+      'Fresh parsley, salt, and black pepper'
+    ],
+    instructions: [
+      'Preheat oven to 200°C (400°F) or prep your air fryer.',
+      'Place seabass fillet on baking paper, rub with olive oil, lemon juice, sliced garlic, salt, and pepper.',
+      'Arrange asparagus spears around the fish.',
+      'Bake for 12-14 minutes until the fish flakes easily with a fork. Garnish with fresh chopped parsley before serving.'
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'r10',
+    title: 'High-Protein Vegan Lentil & Chickpea Curry',
+    category: 'dinner',
+    dietTags: ['vegetarian', 'high_protein'],
+    prepTime: 15,
+    cookTime: 25,
+    difficulty: 'medium',
+    calories: 430,
+    protein: 24,
+    carbs: 62,
+    fat: 9,
+    ingredients: [
+      '120g canned brown lentils (drained)',
+      '100g canned chickpeas (washed and drained)',
+      '150ml light coconut milk',
+      '1 medium onion & 1 tomato (chopped)',
+      '1 tbsp curry powder, 1/2 tsp ginger-garlic paste',
+      '1 tsp cumin seeds and fresh coriander'
+    ],
+    instructions: [
+      'Heat oil in a deep pan, add cumin seeds, chopped onion, and ginger-garlic paste. Sauté until golden.',
+      'Add chopped tomatoes and curry powder, stirring until a thick aromatic base forms.',
+      'Stir in the brown lentils and chickpeas, then pour in the light coconut milk and 100ml water.',
+      'Simmer on low heat for 20 minutes until curry thickens. Top with fresh chopped coriander and serve.'
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'r11',
+    title: 'Avocado Chicken Salad Power Bowl',
+    category: 'lunch',
+    dietTags: ['high_protein', 'low_carb', 'weight_loss'],
+    prepTime: 10,
+    cookTime: 10,
+    difficulty: 'easy',
+    calories: 460,
+    protein: 45,
+    carbs: 10,
+    fat: 22,
+    ingredients: [
+      '160g cooked skinless chicken breast (shredded)',
+      '1/2 medium ripe avocado (cubed)',
+      '2 cups mixed baby salad greens (spinach, arugula)',
+      '50g cherry tomatoes (halved)',
+      '1 tbsp apple cider vinegar and 1 tsp olive oil',
+      'Squeeze of fresh lime juice'
+    ],
+    instructions: [
+      'In a large mixing bowl, arrange the mixed baby salad greens as your base.',
+      'Add shredded cooked chicken breast and halved cherry tomatoes.',
+      'Add the cubed fresh avocado gently to avoid mashing.',
+      'Whisk olive oil, apple cider vinegar, and fresh lime juice together. Drizzle over the bowl, toss gently, and serve immediately.'
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'r12',
+    title: 'Post-Workout Banana Sweet Potato Power Oats',
+    category: 'breakfast',
+    dietTags: ['high_protein', 'weight_gain'],
+    prepTime: 5,
+    cookTime: 10,
+    difficulty: 'easy',
+    calories: 540,
+    protein: 36,
+    carbs: 82,
+    fat: 10,
+    ingredients: [
+      '60g rolled oats',
+      '80g boiled sweet potato (mashed)',
+      '1 scoop (30g) Vanilla Whey Protein',
+      '1/2 medium banana (sliced)',
+      '150ml skimmed milk',
+      '1 tbsp pumpkin seeds'
+    ],
+    instructions: [
+      'In a saucepan, simmer rolled oats in skimmed milk for 5 minutes.',
+      'Stir in the pre-boiled mashed sweet potato until smooth and creamy.',
+      'Remove from heat, let cool slightly, then stir in the vanilla whey protein powder.',
+      'Transfer to a serving bowl. Top with banana slices and pumpkin seeds for a crunch.'
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1517686469429-8bdb88b9f907?w=600&auto=format&fit=crop&q=80'
   }
 ];

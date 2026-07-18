@@ -443,5 +443,54 @@ export const DIET_PLANS: DietPlan[] = [
         { name: 'Warm milk with honey and almonds', foods: [getFood('f8', '15g')] }
       ]
     }
+  },
+  {
+    id: 'dl-if-168',
+    name: '16:8 Intermittent Fasting Shred',
+    category: 'weight_loss',
+    description: 'A chrononutrition protocol restricting food consumption to an 8-hour window (e.g., 12 PM - 8 PM), boosting lipolysis, hormonal health, and insulin sensitivity.',
+    durationDays: 14,
+    difficulty: 'intermediate',
+    benefits: ['Triggers cellular autophagy', 'Maximizes human growth hormone (HGH)', 'Drastically drops insulin spikes'],
+    meals: {
+      'Fast Period (16 Hours)': [
+        { name: 'Black Coffee, Green Tea, or Water', foods: [getFood('f14', '0g')] }
+      ],
+      'Meal 1 (12:00 PM)': [
+        { name: 'Greek Yogurt with sliced almonds & boiled eggs', foods: [getFood('f7', '200g'), getFood('f8', '20g'), getFood('f3', '2 eggs')] }
+      ],
+      'Mid-day Snack (3:30 PM)': [
+        { name: 'Avocado salad bowl with Spinach', foods: [getFood('f4', '100g'), getFood('f14', '100g')] }
+      ],
+      'Meal 2 (7:30 PM)': [
+        { name: 'Grilled Salmon with Sweet Potato & Broccoli', foods: [getFood('f6', '160g'), getFood('f9', '120g')] }
+      ]
+    }
+  },
+  {
+    id: 'dg-veg-lean',
+    name: 'Vegetarian Lean Muscle Builder',
+    category: 'weight_gain',
+    description: 'A structured high-protein plant-based nutrition template combining slow-digesting casein from paneer and legumes for maximal muscle protein synthesis.',
+    durationDays: 30,
+    difficulty: 'beginner',
+    benefits: ['Sustained amino acid release', 'Extremely high antioxidant density', 'Optimizes digestive microbiome'],
+    meals: {
+      Breakfast: [
+        { name: 'Thick Protein Oats with peanut butter', foods: [getFood('f5', '65g'), getFood('f10', '25g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Greek Yogurt with handful of almonds', foods: [getFood('f7', '180g'), getFood('f8', '20g')] }
+      ],
+      Lunch: [
+        { name: 'Spiced Paneer, Dal Chana, and Chapati', foods: [getFood('f13', '100g'), getFood('f12', '150g'), getFood('f11', '1.5 roti')] }
+      ],
+      Dinner: [
+        { name: 'Sautéed spinach with paneer cubes and brown rice', foods: [getFood('f14', '150g'), getFood('f13', '120g'), getFood('f2', '100g')] }
+      ],
+      'Before Sleep': [
+        { name: 'Whey Protein Isolate Shake', foods: [getFood('f15', '30g')] }
+      ]
+    }
   }
 ];
