@@ -503,5 +503,239 @@ export const DIET_PLANS: DietPlan[] = [
         { name: 'Whey Protein Isolate Shake', foods: [getFood('f15', '30g')] }
       ]
     }
+  },
+  {
+    id: 'dl-paleo',
+    name: 'Paleolithic Ancestral Reset',
+    category: 'weight_loss',
+    description: 'Ancestral lifestyle-focused menu emphasizing whole-source proteins, vegetables, tubers, and fats, while completely eliminating processed carbohydrates and dairy.',
+    durationDays: 30,
+    difficulty: 'intermediate',
+    benefits: ['Drastically improves gut health', 'Reduces systemic inflammation', 'Promotes clean cellular energy'],
+    imageUrl: 'https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Whole egg scramble with spinach', foods: [getFood('f3', '2 eggs'), getFood('f14', '100g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Raw sliced avocado with mineral salt', foods: [getFood('f4', '100g')] }
+      ],
+      Lunch: [
+        { name: 'Roasted chicken breast with baked sweet potato', foods: [getFood('f1', '150g'), getFood('f9', '120g')] }
+      ],
+      Dinner: [
+        { name: 'Wild seared Salmon with spinach', foods: [getFood('f6', '160g'), getFood('f14', '150g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-low-carb',
+    name: 'High-Protein Metabolic Accelerator',
+    category: 'weight_loss',
+    description: 'A low-carbohydrate plan optimized to quickly purge excess subcutaneous water, stabilize glucose levels, and induce heavy dietary thermogenesis.',
+    durationDays: 14,
+    difficulty: 'beginner',
+    benefits: ['Expedites flat midsection', 'Eliminates mid-day energy crashes', 'Preserves skeletal muscle'],
+    imageUrl: 'https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Egg white and whole egg scramble', foods: [getFood('f3', '2 eggs'), getFood('f14', '50g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Non-fat Greek Yogurt with raw almonds', foods: [getFood('f7', '180g'), getFood('f8', '15g')] }
+      ],
+      Lunch: [
+        { name: 'Double protein Grilled Chicken breast', foods: [getFood('f1', '200g'), getFood('f14', '120g')] }
+      ],
+      Dinner: [
+        { name: 'Lemon-herb pan-fried Salmon', foods: [getFood('f6', '150g'), getFood('f4', '60g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-pescatarian',
+    name: 'Pescatarian Lean-Out Program',
+    category: 'weight_loss',
+    description: 'A premium marine-protein and clean plant-based protocol prioritizing high omega-3 fatty acids to protect joint integrity while shredded.',
+    durationDays: 21,
+    difficulty: 'beginner',
+    benefits: ['Excellent cardiovascular profile', 'High mental focus and clarity', 'Promotes cellular hydration'],
+    imageUrl: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Boiled eggs with fresh avocado slices', foods: [getFood('f3', '2 eggs'), getFood('f4', '80g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Greek Yogurt with handful of almonds', foods: [getFood('f7', '150g'), getFood('f8', '15g')] }
+      ],
+      Lunch: [
+        { name: 'Sautéed spinach paneer and brown rice bowl', foods: [getFood('f13', '80g'), getFood('f14', '100g'), getFood('f2', '80g')] }
+      ],
+      Dinner: [
+        { name: 'Broiled Salmon with sweet potato mash', foods: [getFood('f6', '180g'), getFood('f9', '100g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-military',
+    name: 'High-Intensity 3-Day Shred',
+    category: 'weight_loss',
+    description: 'A brief, highly structured calorie-cycling routine designed for emergency fat-loss prep before athletic contests or weight ins.',
+    durationDays: 3,
+    difficulty: 'intermediate',
+    benefits: ['Extremely rapid metabolic shock', 'Purges subcutaneous water retention', 'Drastic weight reduction'],
+    imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'One boiled egg and half cup dry oats cooked', foods: [getFood('f3', '1 egg'), getFood('f5', '30g')] }
+      ],
+      Lunch: [
+        { name: 'Single chicken breast with raw spinach', foods: [getFood('f1', '120g'), getFood('f14', '100g')] }
+      ],
+      Dinner: [
+        { name: 'Lean Salmon fillet with water', foods: [getFood('f6', '100g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-dash',
+    name: 'DASH-Compliant Sodium Flush',
+    category: 'weight_loss',
+    description: 'A mineral-rich fat loss dietary protocol specifically configured to reduce blood pressure, drain excess water weight, and eliminate bloating.',
+    durationDays: 30,
+    difficulty: 'intermediate',
+    benefits: ['Optimizes blood pressure levels', 'Dramatically improves vascular health', 'Flushes stagnant subcutaneous fluids'],
+    imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Greek Yogurt oatmeal bowl', foods: [getFood('f5', '40g'), getFood('f7', '120g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Raw unsalted almonds', foods: [getFood('f8', '20g')] }
+      ],
+      Lunch: [
+        { name: 'Spiced Dal Chana soup with whole wheat roti', foods: [getFood('f12', '180g'), getFood('f11', '1 roti')] }
+      ],
+      Dinner: [
+        { name: 'Herbed Chicken breast with baked sweet potato', foods: [getFood('f1', '140g'), getFood('f9', '100g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-veg-shred',
+    name: 'Plant-Based Thermogenic Shred',
+    category: 'weight_loss',
+    description: '100% vegetarian fat burner utilizing slow-digesting pulses, high-fiber complexes, and high protein paneer to maintain continuous metabolic burner state.',
+    durationDays: 14,
+    difficulty: 'beginner',
+    benefits: ['Promotes profound intestinal satiety', 'Superb digestive regular motility', 'Balances daily blood lipid profiles'],
+    imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Oatmeal with peanut butter dollop', foods: [getFood('f5', '45g'), getFood('f10', '15g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Light cottage cheese bowl', foods: [getFood('f13', '100g')] }
+      ],
+      Lunch: [
+        { name: 'Dal Chana soup with steamed spinach', foods: [getFood('f12', '180g'), getFood('f14', '120g')] }
+      ],
+      Dinner: [
+        { name: 'Sautéed paneer spinach with brown rice', foods: [getFood('f13', '100g'), getFood('f14', '100g'), getFood('f2', '60g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-glycemic',
+    name: 'Low-Glycemic Insulin Protocol',
+    category: 'weight_loss',
+    description: 'Stabilizes baseline insulin curves by utilizing low-glycemic carbs and high dietary fibers, making fat stores highly accessible for daily cellular oxidation.',
+    durationDays: 30,
+    difficulty: 'intermediate',
+    benefits: ['Stops sweet and salty cravings completely', 'Unlocks refractory fat burning pathways', 'Sustains steady cellular mitochondrial output'],
+    imageUrl: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Oatmeal mixed with whey isolate protein', foods: [getFood('f5', '40g'), getFood('f15', '20g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Boiled egg white with raw almonds', foods: [getFood('f3', '2 eggs'), getFood('f8', '15g')] }
+      ],
+      Lunch: [
+        { name: 'Baked Salmon with fresh spinach', foods: [getFood('f6', '140g'), getFood('f14', '150g')] }
+      ],
+      Dinner: [
+        { name: 'Seasoned Chicken breast with sweet potato mash', foods: [getFood('f1', '140g'), getFood('f9', '80g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-carnivore',
+    name: 'Carnivore Elimination Protocol',
+    category: 'weight_loss',
+    description: 'Highly therapeutic high-fat, high-protein animal-only diet designed to resolve gut hyper-permeability while promoting hyper-fat burning.',
+    durationDays: 30,
+    difficulty: 'advanced',
+    benefits: ['Complete gut biome reset', 'Total eradication of physical bloating', 'Highest rates of nitrogen retention'],
+    imageUrl: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Scrambled eggs with butter', foods: [getFood('f3', '3 eggs')] }
+      ],
+      Lunch: [
+        { name: 'Pan-seared Chicken breast with skin', foods: [getFood('f1', '220g')] }
+      ],
+      Dinner: [
+        { name: 'Thick seared Salmon fillet', foods: [getFood('f6', '200g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-carb-cycling',
+    name: 'Athletic Carb-Cycling Protocol',
+    category: 'weight_loss',
+    description: 'A performance fat-burner alternating low carb days on rest intervals with moderate carb intake on intense weightlifting days.',
+    durationDays: 21,
+    difficulty: 'advanced',
+    benefits: ['Preserves explosive athletic force output', 'Triggers acute localized lipolysis', 'Maximizes muscle glycogen loading'],
+    imageUrl: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Protein Oats bowl', foods: [getFood('f5', '50g'), getFood('f15', '20g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Greek Yogurt with berries', foods: [getFood('f7', '150g')] }
+      ],
+      Lunch: [
+        { name: 'Chicken breast with baked sweet potato', foods: [getFood('f1', '160g'), getFood('f9', '120g')] }
+      ],
+      Dinner: [
+        { name: 'Seared Salmon with steamed spinach', foods: [getFood('f6', '140g'), getFood('f14', '150g')] }
+      ]
+    }
+  },
+  {
+    id: 'dl-detox',
+    name: 'Superfood Antioxidant Flush',
+    category: 'weight_loss',
+    description: 'A micronutrient-focused light calorie detox designed to saturating cells with raw vitamins, reducing systemic physical stress, and boosting liver pathways.',
+    durationDays: 7,
+    difficulty: 'beginner',
+    benefits: ['Radiant skin complexion', 'Profound full body detoxification', 'Unloads heavy liver congestion'],
+    imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&auto=format&fit=crop&q=80',
+    meals: {
+      Breakfast: [
+        { name: 'Super green Greek Yogurt spinach bowl', foods: [getFood('f7', '150g'), getFood('f14', '100g')] }
+      ],
+      'Morning Snack': [
+        { name: 'Raw sliced avocado and almonds', foods: [getFood('f4', '80g'), getFood('f8', '10g')] }
+      ],
+      Lunch: [
+        { name: 'Lentil Dal soup with spinach', foods: [getFood('f12', '150g'), getFood('f14', '80g')] }
+      ],
+      Dinner: [
+        { name: 'Herb pan Salmon with sweet potato', foods: [getFood('f6', '120g'), getFood('f9', '80g')] }
+      ]
+    }
   }
 ];
