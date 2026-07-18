@@ -14,6 +14,7 @@ export interface UserProfile {
   proteinGoal: number; // g
   carbsGoal: number; // g
   fatGoal: number; // g
+  waterReminderInterval?: number; // minutes (0 or undefined = disabled)
 }
 
 export interface FoodItem {

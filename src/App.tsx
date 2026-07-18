@@ -10,7 +10,7 @@ import BlogSection from './components/BlogSection';
 import Dashboard from './components/Dashboard';
 import AICoach from './components/AICoach';
 import { UserProfile } from './types';
-import { Sparkles, Trophy, Heart } from 'lucide-react';
+import { Sparkles, Trophy, Heart, Droplet, Bell, X } from 'lucide-react';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -40,6 +40,72 @@ export default function App() {
   const handleUpdateProfile = (updatedProfile: UserProfile) => {
     setProfile(updatedProfile);
     localStorage.setItem('fitlife_user_profile', JSON.stringify(updatedProfile));
+  };
+
+  const [showWaterToast, setShowWaterToast] = useState(false);
+
+  // Periodic automated reminder system for water intake
+  useEffect(() => {
+    if (!profile) return;
+
+    const intervalMinutes = profile.waterReminderInterval || 0;
+    if (intervalMinutes <= 0) {
+      setShowWaterToast(false);
+      return;
+    }
+
+    // Set initial last reminder time if not present
+    if (!localStorage.getItem('fitlife_last_water_reminder')) {
+      localStorage.setItem('fitlife_last_water_reminder', Date.now().toString());
+    }
+
+    const checkReminder = () => {
+      const lastReminderStr = localStorage.getItem('fitlife_last_water_reminder');
+      const lastReminder = lastReminderStr ? parseInt(lastReminderStr) : Date.now();
+      const intervalMs = intervalMinutes * 60 * 1000;
+      const now = Date.now();
+
+      if (now - lastReminder >= intervalMs) {
+        setShowWaterToast(true);
+      }
+    };
+
+    // Run initial check immediately
+    checkReminder();
+
+    // Check every 4 seconds
+    const timerId = setInterval(checkReminder, 4000);
+
+    return () => clearInterval(timerId);
+  }, [profile?.waterReminderInterval, profile]);
+
+  const handleLogWaterFromToast = () => {
+    // 1. Log 250ml water
+    const savedWater = localStorage.getItem('fitlife_water_log');
+    const currentWater = savedWater ? parseInt(savedWater) : 0;
+    const nextWater = currentWater + 250;
+    localStorage.setItem('fitlife_water_log', nextWater.toString());
+
+    // 2. Award +5 XP
+    const savedPoints = localStorage.getItem('fitlife_points');
+    const currentPoints = savedPoints ? parseInt(savedPoints) : 120;
+    const nextPoints = currentPoints + 5;
+    localStorage.setItem('fitlife_points', nextPoints.toString());
+
+    // 3. Reset reminder time
+    localStorage.setItem('fitlife_last_water_reminder', Date.now().toString());
+
+    // 4. Dismiss toast
+    setShowWaterToast(false);
+
+    // 5. Notify Dashboard / active listeners
+    window.dispatchEvent(new Event('fitlife_state_updated'));
+  };
+
+  const handleDismissToast = () => {
+    // Reset reminder time to now to wait another full interval
+    localStorage.setItem('fitlife_last_water_reminder', Date.now().toString());
+    setShowWaterToast(false);
   };
 
   const handleReset = () => {
@@ -138,6 +204,57 @@ export default function App() {
               </motion.div>
             </AnimatePresence>
           </Layout>
+
+          {/* Floating Water Toast Notification Alert */}
+          <AnimatePresence>
+            {showWaterToast && (
+              <motion.div
+                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                className="fixed bottom-6 right-6 z-50 max-w-sm w-[340px] bg-neutral-900 dark:bg-neutral-950 border border-sky-500/30 dark:border-sky-500/20 text-white rounded-2xl shadow-2xl p-4 space-y-3"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/20 flex items-center justify-center text-sky-400 shrink-0 animate-pulse">
+                      <Droplet className="w-5 h-5 fill-sky-400/20" />
+                    </div>
+                    <div>
+                      <h5 className="text-xs font-black tracking-wide text-neutral-100 flex items-center gap-1.5 uppercase font-mono">
+                        <Bell className="w-3.5 h-3.5 text-amber-400" /> Hydration Alert
+                      </h5>
+                      <p className="text-[11px] text-neutral-400 leading-relaxed mt-1">
+                        Discipline check! Rehydrate your system now to keep your metabolism performing at maximum efficiency.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleDismissToast}
+                    className="p-1 rounded-lg text-neutral-400 hover:text-neutral-200 hover:bg-white/5 transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="flex gap-2 justify-end text-xs font-bold pt-1">
+                  <button
+                    onClick={handleDismissToast}
+                    className="px-3 py-1.5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40 transition text-[10px]"
+                  >
+                    Dismiss
+                  </button>
+                  <button
+                    onClick={handleLogWaterFromToast}
+                    className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600 text-white transition flex items-center gap-1 text-[10px] shadow-md shadow-sky-500/10 cursor-pointer"
+                  >
+                    <Droplet className="w-3 h-3 fill-white/10" />
+                    <span>Log 250ml (+5 XP)</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserProfile, DailyChallenge } from '../types';
-import { Flame, Trophy, Award, Trash, Droplet, Footprints, Scale, Circle, TrendingDown, Users, CheckCircle, RefreshCw, Download, FileText, Database } from 'lucide-react';
+import { Flame, Trophy, Award, Trash, Droplet, Footprints, Scale, Circle, TrendingDown, Users, CheckCircle, RefreshCw, Download, FileText, Database, Bell, Settings } from 'lucide-react';
 import HabitTracker from './HabitTracker';
 
 interface DashboardProps {
@@ -62,6 +62,20 @@ export default function Dashboard({ profile, onUpdateProfile, onReset }: Dashboa
 
     const savedChallenges = localStorage.getItem('fitlife_challenges');
     if (savedChallenges) setChallenges(JSON.parse(savedChallenges));
+  }, []);
+
+  // Sync state from global toast notification updates
+  useEffect(() => {
+    const handleSync = () => {
+      const savedWater = localStorage.getItem('fitlife_water_log');
+      if (savedWater) setWaterAmount(parseInt(savedWater));
+
+      const savedPoints = localStorage.getItem('fitlife_points');
+      if (savedPoints) setPoints(parseInt(savedPoints));
+    };
+
+    window.addEventListener('fitlife_state_updated', handleSync);
+    return () => window.removeEventListener('fitlife_state_updated', handleSync);
   }, []);
 
   // Sync state helpers
@@ -502,6 +516,126 @@ export default function Dashboard({ profile, onUpdateProfile, onReset }: Dashboa
             <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-center font-mono">
               <span className="text-[9px] text-rose-400 font-bold block flex items-center gap-0.5"><Flame className="w-3.5 h-3.5 fill-rose-500 text-rose-500" /> STREAK</span>
               <span className="text-lg font-black text-white">{streakDays} Days</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Settings & Alerts Center */}
+        <div className="p-5 bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-850 rounded-2xl shadow-sm space-y-4">
+          <h4 className="font-bold text-sm text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
+            <Bell className="w-5 h-5 text-emerald-500 animate-bounce" /> Settings & Alerts Center
+          </h4>
+          <p className="text-[11px] text-neutral-400 leading-relaxed">
+            Manage your hydration alert intervals, daily water target, and body parameters. Changes take effect instantly.
+          </p>
+
+          <div className="space-y-3 pt-1">
+            {/* Water Reminder Selector */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-mono text-neutral-400 dark:text-neutral-500 block font-bold">
+                Water Reminder Alert Interval
+              </label>
+              <select
+                id="select_water_interval"
+                value={profile.waterReminderInterval || 0}
+                onChange={e => {
+                  const val = parseInt(e.target.value);
+                  const updated = { ...profile, waterReminderInterval: val };
+                  // Reset timer timestamp so it starts fresh from now
+                  localStorage.setItem('fitlife_last_water_reminder', Date.now().toString());
+                  onUpdateProfile(updated);
+                }}
+                className="w-full text-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+              >
+                <option value={0}>Disabled</option>
+                <option value={1}>1 Minute (Demo Mode ⏳)</option>
+                <option value={15}>15 Minutes</option>
+                <option value={30}>30 Minutes</option>
+                <option value={60}>60 Minutes (1 Hour)</option>
+                <option value={120}>120 Minutes (2 Hours)</option>
+                <option value={180}>180 Minutes (3 Hours)</option>
+              </select>
+            </div>
+
+            {/* Quick adjustable metrics */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-mono text-neutral-400 dark:text-neutral-500 block">
+                  Water Goal (ml)
+                </label>
+                <input
+                  id="input_setting_water_goal"
+                  type="number"
+                  step="250"
+                  min="500"
+                  max="8000"
+                  value={profile.waterGoal}
+                  onChange={e => {
+                    const val = parseInt(e.target.value) || 2000;
+                    onUpdateProfile({ ...profile, waterGoal: val });
+                  }}
+                  className="w-full text-xs font-semibold bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-100"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-mono text-neutral-400 dark:text-neutral-500 block">
+                  Calories Goal (kcal)
+                </label>
+                <input
+                  id="input_setting_calories"
+                  type="number"
+                  step="50"
+                  min="1000"
+                  max="6000"
+                  value={profile.calorieGoal}
+                  onChange={e => {
+                    const val = parseInt(e.target.value) || 2000;
+                    onUpdateProfile({ ...profile, calorieGoal: val });
+                  }}
+                  className="w-full text-xs font-semibold bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-100"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-mono text-neutral-400 dark:text-neutral-500 block">
+                  Weight (kg)
+                </label>
+                <input
+                  id="input_setting_weight"
+                  type="number"
+                  step="0.1"
+                  min="30"
+                  max="300"
+                  value={profile.weight}
+                  onChange={e => {
+                    const val = parseFloat(e.target.value) || 70;
+                    onUpdateProfile({ ...profile, weight: val });
+                  }}
+                  className="w-full text-xs font-semibold bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-100"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] uppercase font-mono text-neutral-400 dark:text-neutral-500 block">
+                  Target Weight (kg)
+                </label>
+                <input
+                  id="input_setting_target_weight"
+                  type="number"
+                  step="0.1"
+                  min="30"
+                  max="300"
+                  value={profile.targetWeight}
+                  onChange={e => {
+                    const val = parseFloat(e.target.value) || 70;
+                    onUpdateProfile({ ...profile, targetWeight: val });
+                  }}
+                  className="w-full text-xs font-semibold bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-xl px-3 py-2 text-neutral-800 dark:text-neutral-100"
+                />
+              </div>
             </div>
           </div>
         </div>
