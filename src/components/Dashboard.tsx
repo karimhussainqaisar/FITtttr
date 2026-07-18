@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserProfile, DailyChallenge } from '../types';
 import { Flame, Trophy, Award, Trash, Droplet, Footprints, Scale, Circle, TrendingDown, Users, CheckCircle, RefreshCw, Download, FileText, Database } from 'lucide-react';
+import HabitTracker from './HabitTracker';
 
 interface DashboardProps {
   profile: UserProfile;
@@ -121,6 +122,14 @@ export default function Dashboard({ profile, onUpdateProfile, onReset }: Dashboa
     const baseLog = [{ date: 'Jul 18', weight: profile.weight }];
     setWeightLogs(baseLog);
     localStorage.setItem('fitlife_weight_logs', JSON.stringify(baseLog));
+  };
+
+  const handleAddXP = (xp: number) => {
+    setPoints(pts => {
+      const nextPts = Math.max(0, pts + xp);
+      localStorage.setItem('fitlife_points', nextPts.toString());
+      return nextPts;
+    });
   };
 
   // SVG Weight Graph Calculations
@@ -496,6 +505,9 @@ export default function Dashboard({ profile, onUpdateProfile, onReset }: Dashboa
             </div>
           </div>
         </div>
+
+        {/* Daily Habits Tracker */}
+        <HabitTracker onAddXP={handleAddXP} />
 
         {/* Daily Challenges */}
         <div className="p-5 bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-850 rounded-2xl shadow-sm space-y-4">

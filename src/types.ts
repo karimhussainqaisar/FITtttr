@@ -116,3 +116,11 @@ export interface Message {
   text: string;
   timestamp: string;
 }
+
+export interface Habit {
+  id: string;
+  title: string;
+  completed: boolean;
+  streak: number;
+}
+
