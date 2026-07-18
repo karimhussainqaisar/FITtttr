@@ -1,0 +1,6 @@
+{
+  "name": "FitLife AI – Smart Diet & Exercise Planner",
+  "description": "An advanced AI-powered health and fitness platform for personalized weight loss, muscle gain, meal plans, workout routines, and real-time AI coaching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
