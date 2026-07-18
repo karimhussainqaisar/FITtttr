@@ -4,8 +4,10 @@ import { DIET_PLANS, FOOD_DATABASE } from '../data/diets';
 import { DietPlan, FoodItem, Meal } from '../types';
 import { 
   Search, Sparkles, Flame, Apple, Heart, CheckCircle2, ShoppingBag, 
-  Clock, Award, Info, ChevronRight, Gauge, Zap, Activity, Scale, ShieldAlert, BookOpen, Layers
+  Clock, Award, Info, ChevronRight, Gauge, Zap, Activity, Scale, ShieldAlert, BookOpen, Layers,
+  FileDown, Loader2
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 // Culinary & Whole Foods Cover Images dictionary
 const FOOD_IMAGES: Record<string, string> = {
@@ -102,6 +104,294 @@ export default function DietSection() {
   const [activeTab, setActiveTab] = useState<'plans' | 'database'>('plans');
   const [planFilter, setPlanFilter] = useState<'all' | 'weight_loss' | 'weight_gain'>('all');
   const [selectedPlan, setSelectedPlan] = useState<DietPlan | null>(DIET_PLANS[0] || null);
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPdf = async (plan: DietPlan) => {
+    if (!plan) return;
+    setIsExporting(true);
+    
+    // Slight timeout to show beautiful feedback
+    setTimeout(() => {
+      try {
+        const doc = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        });
+
+        const stats = calculatePlanNutrition(plan);
+
+        // Nutrition split calculations
+        const protKcal = stats.protein * 4;
+        const carbKcal = stats.carbs * 4;
+        const fatKcal = stats.fat * 9;
+        const totalMacroKcal = protKcal + carbKcal + fatKcal || 1;
+
+        const protPct = Math.round((protKcal / totalMacroKcal) * 100);
+        const carbPct = Math.round((carbKcal / totalMacroKcal) * 100);
+        const fatPct = Math.max(0, 100 - protPct - carbPct);
+
+        let y = 15;
+
+        // Header Draw helper
+        const drawHeader = (pageNum: number) => {
+          // Top colored banner
+          doc.setFillColor(16, 185, 129); // emerald-500
+          doc.rect(10, y, 190, 24, 'F');
+
+          doc.setTextColor(255, 255, 255);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(16);
+          doc.text('FITLIFE AI', 15, y + 9);
+          
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.text('PRECISION PHYSIOLOGICAL ENGINEERING • NUTRITION REPORT', 15, y + 15);
+
+          // Page marker
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.text(`PAGE ${pageNum}`, 180, y + 9, { align: 'right' });
+
+          y += 30;
+        };
+
+        const drawFooter = () => {
+          doc.setDrawColor(220, 220, 220);
+          doc.line(10, 285, 200, 285);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(120, 120, 120);
+          doc.text('FITLIFE AI NUTRITION PLAN - CONFIDENTIAL Athletic Record', 15, 290);
+          doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 195, 290, { align: 'right' });
+        };
+
+        let page = 1;
+        drawHeader(page);
+
+        // Plan Title Area
+        doc.setTextColor(30, 41, 59);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text(plan.name.toUpperCase(), 15, y);
+        y += 6;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(71, 85, 105);
+        const descLines = doc.splitTextToSize(plan.description, 180);
+        doc.text(descLines, 15, y);
+        y += descLines.length * 5 + 3;
+
+        // Metadata Tags Row
+        doc.setFillColor(241, 245, 249);
+        doc.rect(15, y, 180, 8, 'F');
+        doc.setTextColor(51, 65, 85);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.text(`CATEGORY: ${plan.category.toUpperCase().replace('_', ' ')}`, 20, y + 5);
+        doc.text(`DURATION: ${plan.durationDays} DAYS`, 80, y + 5);
+        doc.text(`DIFFICULTY: ${plan.difficulty.toUpperCase()} TIER`, 130, y + 5);
+        y += 15;
+
+        // Daily Nutritional Budget (The infographic part)
+        doc.setTextColor(15, 23, 42);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('DAILY NUTRITIONAL BUDGET & TARGETS', 15, y);
+        y += 6;
+
+        // 4 Cards Grid
+        const cardW = 42;
+        const cardH = 16;
+        const cardSpacing = 4;
+        let cardX = 15;
+
+        // Calories Card
+        doc.setFillColor(236, 253, 245); // light emerald
+        doc.setDrawColor(16, 185, 129);
+        doc.rect(cardX, y, cardW, cardH, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(5, 150, 105);
+        doc.text('DAILY CALORIES', cardX + 4, y + 5);
+        doc.setFontSize(12);
+        doc.text(`${stats.calories} kcal`, cardX + 4, y + 11);
+
+        // Protein Card
+        cardX += cardW + cardSpacing;
+        doc.setFillColor(240, 249, 255); // light sky
+        doc.setDrawColor(14, 165, 233);
+        doc.rect(cardX, y, cardW, cardH, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(3, 105, 161);
+        doc.text('PROTEIN TARGET', cardX + 4, y + 5);
+        doc.setFontSize(12);
+        doc.text(`${stats.protein}g (${protPct}%)`, cardX + 4, y + 11);
+
+        // Carbs Card
+        cardX += cardW + cardSpacing;
+        doc.setFillColor(254, 252, 232); // light amber
+        doc.setDrawColor(245, 158, 11);
+        doc.rect(cardX, y, cardW, cardH, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(180, 83, 9);
+        doc.text('CARBOHYDRATES', cardX + 4, y + 5);
+        doc.setFontSize(12);
+        doc.text(`${stats.carbs}g (${carbPct}%)`, cardX + 4, y + 11);
+
+        // Fats Card
+        cardX += cardW + cardSpacing;
+        doc.setFillColor(255, 241, 242); // light rose
+        doc.setDrawColor(244, 63, 94);
+        doc.rect(cardX, y, cardW, cardH, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(190, 24, 74);
+        doc.text('LIPID FATS', cardX + 4, y + 5);
+        doc.setFontSize(12);
+        doc.text(`${stats.fat}g (${fatPct}%)`, cardX + 4, y + 11);
+
+        y += cardH + 10;
+
+        // Key Physiological Adaptations
+        doc.setTextColor(15, 23, 42);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text('PRIMARY PHYSIOLOGICAL ADAPTATIONS', 15, y);
+        y += 6;
+
+        plan.benefits.forEach((benefit) => {
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(226, 232, 240);
+          doc.rect(15, y, 180, 7, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(16, 185, 129);
+          doc.text('[ACTIVE]', 20, y + 4.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(51, 65, 85);
+          doc.text(benefit, 36, y + 4.5);
+          y += 9;
+        });
+
+        y += 5;
+
+        // Timeline / Meals Header
+        doc.setTextColor(15, 23, 42);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11.5);
+        doc.text('24-HOUR CLINICAL TIMELINE & MEAL SCHEDULING', 15, y);
+        y += 8;
+
+        // Print Footer for Page 1
+        drawFooter();
+
+        // Print Meals
+        const mealTypes = Object.keys(plan.meals);
+        mealTypes.forEach((mealType) => {
+          const meals = plan.meals[mealType];
+
+          meals.forEach((meal) => {
+            // Check if we need to paginate before writing the meal header
+            if (y > 220) {
+              doc.addPage();
+              page += 1;
+              y = 15;
+              drawHeader(page);
+              drawFooter();
+            }
+
+            // Meal header
+            doc.setFillColor(241, 245, 249);
+            doc.rect(15, y, 180, 8, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(16, 185, 129);
+            doc.text(mealType.toUpperCase(), 20, y + 5.5);
+            
+            if (meal.time) {
+              doc.setTextColor(100, 116, 139);
+              doc.setFontSize(8);
+              doc.text(`SCHEDULED TIME: ${meal.time}`, 190, y + 5.5, { align: 'right' });
+            }
+            y += 13;
+
+            // Meal details title
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10.5);
+            doc.setTextColor(15, 23, 42);
+            doc.text(meal.name, 15, y);
+            y += 6;
+
+            // Ingredient items
+            meal.foods.forEach(({ food, quantity }) => {
+              // Page check for each food item
+              if (y > 240) {
+                doc.addPage();
+                page += 1;
+                y = 15;
+                drawHeader(page);
+                drawFooter();
+              }
+
+              // Food box outline
+              doc.setFillColor(255, 255, 255);
+              doc.setDrawColor(241, 245, 249);
+              doc.rect(15, y, 180, 20, 'FD');
+
+              // Food title
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(9);
+              doc.setTextColor(30, 41, 59);
+              doc.text(food.name, 19, y + 5);
+
+              // Serving size / quantity
+              doc.setFont('helvetica', 'normal');
+              doc.setFontSize(8);
+              doc.setTextColor(100, 116, 139);
+              doc.text(`Qty: ${quantity} (Serving: ${food.servingSize})`, 19, y + 9);
+
+              // Macros values
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(7.5);
+              doc.setTextColor(51, 65, 85);
+              doc.text(`PROT: ${food.protein}g`, 19, y + 14);
+              doc.text(`CARB: ${food.carbs}g`, 48, y + 14);
+              doc.text(`FAT: ${food.fat}g`, 76, y + 14);
+              doc.text(`FIBER: ${food.fiber}g`, 102, y + 14);
+
+              // Calories right aligned
+              doc.setFont('helvetica', 'bold');
+              doc.setFontSize(10);
+              doc.setTextColor(16, 185, 129);
+              doc.text(`${food.calories} kcal`, 190, y + 6.5, { align: 'right' });
+
+              // Benefits info text
+              doc.setFont('helvetica', 'normal');
+              doc.setFontSize(7.5);
+              doc.setTextColor(100, 116, 139);
+              const benefitsTrimmed = food.benefits.length > 70 ? food.benefits.substring(0, 67) + '...' : food.benefits;
+              doc.text(`Advantage: ${benefitsTrimmed}`, 19, y + 17.5);
+
+              y += 24;
+            });
+
+            y += 2;
+          });
+        });
+
+        doc.save(`FitLife_Diet_Plan_${plan.id}.pdf`);
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+      } finally {
+        setIsExporting(false);
+      }
+    }, 1200);
+  };
 
   // Food Database State
   const [searchQuery, setSearchQuery] = useState('');
@@ -277,6 +567,29 @@ export default function DietSection() {
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover opacity-35"
                           />
+                          
+                          {/* Floating Glassmorphism Export Button */}
+                          <div className="absolute top-4 right-4 z-10">
+                            <button
+                              id={`btn_export_pdf_${selectedPlan.id}`}
+                              onClick={() => handleExportPdf(selectedPlan)}
+                              disabled={isExporting}
+                              className="flex items-center gap-2 bg-black/50 hover:bg-black/70 disabled:bg-neutral-800/50 text-white backdrop-blur-md border border-white/20 px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-black uppercase tracking-wider transition shadow-md hover:scale-102 active:scale-98 disabled:opacity-50 cursor-pointer"
+                            >
+                              {isExporting ? (
+                                <>
+                                  <Loader2 className="w-3.5 h-3.5 text-emerald-400 animate-spin" />
+                                  <span>Compiling...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <FileDown className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>Export PDF</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+
                           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-900/60 to-transparent flex flex-col justify-end p-6 md:p-8 space-y-2">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className={`px-2.5 py-0.5 text-[9px] font-black tracking-wider uppercase rounded-md shadow-sm ${
