@@ -11,24 +11,24 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, profile, activeTab, onTabChange, onReset }: LayoutProps) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('fitlife_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Force initial dark mode as it feels much more premium and sleek for active fitness
     const root = window.document.documentElement;
-    root.classList.add('dark');
-  }, []);
-
-  const toggleTheme = () => {
-    const root = window.document.documentElement;
-    if (theme === 'light') {
+    if (theme === 'dark') {
       root.classList.add('dark');
-      setTheme('dark');
     } else {
       root.classList.remove('dark');
-      setTheme('light');
     }
+    localStorage.setItem('fitlife_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   const navItems = [
