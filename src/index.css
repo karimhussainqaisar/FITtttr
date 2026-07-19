@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand-primary: var(--brand-primary, #10b981);
+  --color-brand-secondary: var(--brand-secondary, #14b8a6);
+  --color-brand-glow: var(--brand-glow, rgba(16, 185, 129, 0.2));
+  --color-brand-light: var(--brand-light, rgba(16, 185, 129, 0.1));
+}
+

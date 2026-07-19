@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import crypto from 'crypto';
 import { GoogleGenAI } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
 
@@ -39,122 +38,9 @@ function getGeminiClient(): GoogleGenAI {
   return aiClient;
 }
 
-// Path for users.json file database
-const usersFilePath = path.join(process.cwd(), 'users.json');
-
-function readUsersFromFile() {
-  try {
-    if (fs.existsSync(usersFilePath)) {
-      const data = fs.readFileSync(usersFilePath, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Error reading users file:', err);
-  }
-  return {};
-}
-
-function writeUsersToFile(users: any) {
-  try {
-    fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf8');
-    return true;
-  } catch (err) {
-    console.error('Error writing users file:', err);
-    return false;
-  }
-}
-
-function hashPassword(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
-
 // API Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'FitLife AI Service' });
-});
-
-// User Registration
-app.post('/api/auth/register', (req, res) => {
-  try {
-    const { email, password, data } = req.body;
-    if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required.' });
-      return;
-    }
-
-    const normalizedEmail = email.toLowerCase().trim();
-    const users = readUsersFromFile();
-
-    if (users[normalizedEmail]) {
-      res.status(400).json({ error: 'An account with this email already exists.' });
-      return;
-    }
-
-    users[normalizedEmail] = {
-      email: normalizedEmail,
-      password: hashPassword(password),
-      data: data || null
-    };
-
-    writeUsersToFile(users);
-
-    res.json({ success: true, email: normalizedEmail, data: users[normalizedEmail].data });
-  } catch (error: any) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'An internal server error occurred during registration.' });
-  }
-});
-
-// User Login
-app.post('/api/auth/login', (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required.' });
-      return;
-    }
-
-    const normalizedEmail = email.toLowerCase().trim();
-    const users = readUsersFromFile();
-    const user = users[normalizedEmail];
-
-    if (!user || user.password !== hashPassword(password)) {
-      res.status(401).json({ error: 'Invalid email or password.' });
-      return;
-    }
-
-    res.json({ success: true, email: normalizedEmail, data: user.data });
-  } catch (error: any) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'An internal server error occurred during login.' });
-  }
-});
-
-// Live Synchronisation
-app.post('/api/auth/sync', (req, res) => {
-  try {
-    const { email, data } = req.body;
-    if (!email || !data) {
-      res.status(400).json({ error: 'Email and synchronisation payload are required.' });
-      return;
-    }
-
-    const normalizedEmail = email.toLowerCase().trim();
-    const users = readUsersFromFile();
-
-    if (!users[normalizedEmail]) {
-      res.status(404).json({ error: 'Account not found.' });
-      return;
-    }
-
-    users[normalizedEmail].data = data;
-    writeUsersToFile(users);
-
-    res.json({ success: true });
-  } catch (error: any) {
-    console.error('Sync error:', error);
-    res.status(500).json({ error: 'An internal server error occurred during sync.' });
-  }
 });
 
 // Helper to read and write articles from/to filesystem database

@@ -9,21 +9,24 @@ import RecipeSection from './components/RecipeSection';
 import BlogSection from './components/BlogSection';
 import Dashboard from './components/Dashboard';
 import AICoach from './components/AICoach';
-import CloudSyncModal from './components/CloudSyncModal';
 import { UserProfile } from './types';
 import { Sparkles, Trophy, Heart, Droplet, Bell, X } from 'lucide-react';
+import { applyThemeVariables } from './lib/theme';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Cloud Sync States
-  const [cloudUserEmail, setCloudUserEmail] = useState<string | null>(() => {
-    return localStorage.getItem('fitlife_cloud_user_email');
+  
+  // UI Color Theme State
+  const [colorTheme, setColorTheme] = useState<string>(() => {
+    return localStorage.getItem('fitlife_color_theme_id') || 'emerald-vitality';
   });
-  const [showSyncModal, setShowSyncModal] = useState<boolean>(false);
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Apply color theme variables dynamically on change
+  useEffect(() => {
+    applyThemeVariables(colorTheme);
+  }, [colorTheme]);
 
   // Sync profile state with localStorage
   useEffect(() => {
@@ -38,124 +41,6 @@ export default function App() {
       setLoading(false);
     }
   }, []);
-
-  const syncStateToCloud = async (overrideEmail?: string | null) => {
-    const emailToUse = overrideEmail !== undefined ? overrideEmail : cloudUserEmail;
-    if (!emailToUse) return;
-
-    setIsSyncing(true);
-    try {
-      const payload = {
-        profile: JSON.parse(localStorage.getItem('fitlife_user_profile') || 'null'),
-        water_log: parseInt(localStorage.getItem('fitlife_water_log') || '0'),
-        steps_log: parseInt(localStorage.getItem('fitlife_steps_log') || '3400'),
-        weight_logs: JSON.parse(localStorage.getItem('fitlife_weight_logs') || '[]'),
-        points: parseInt(localStorage.getItem('fitlife_points') || '120'),
-        streak: parseInt(localStorage.getItem('fitlife_streak') || '4'),
-        challenges: JSON.parse(localStorage.getItem('fitlife_challenges') || '[]'),
-        habits: JSON.parse(localStorage.getItem('fitlife_habits_tracker') || '[]')
-      };
-
-      await fetch('/api/auth/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: emailToUse,
-          data: payload
-        })
-      });
-    } catch (err) {
-      console.error('Auto-sync failed:', err);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
-  // Intercept localStorage.setItem to listen for user logs and stats updates in real-time
-  useEffect(() => {
-    const originalSetItem = localStorage.setItem;
-    
-    localStorage.setItem = function(key: string, value: string) {
-      originalSetItem.apply(this, [key, value]);
-      
-      if (key.startsWith('fitlife_') && key !== 'fitlife_cloud_user_email') {
-        window.dispatchEvent(new CustomEvent('fitlife_state_changed_internal', { detail: { key, value } }));
-      }
-    };
-
-    return () => {
-      localStorage.setItem = originalSetItem;
-    };
-  }, []);
-
-  // Sync state with cloud when local data changes
-  useEffect(() => {
-    let timer: any;
-    const handleStateChanged = () => {
-      if (cloudUserEmail) {
-        clearTimeout(timer);
-        // Debounce auto-sync for 1 second to prevent server spam on rapid updates (like slider dragging)
-        timer = setTimeout(() => {
-          syncStateToCloud();
-        }, 1000);
-      }
-    };
-
-    window.addEventListener('fitlife_state_changed_internal', handleStateChanged);
-    window.addEventListener('fitlife_state_updated', handleStateChanged);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('fitlife_state_changed_internal', handleStateChanged);
-      window.removeEventListener('fitlife_state_updated', handleStateChanged);
-    };
-  }, [cloudUserEmail]);
-
-  const handleLoginSuccess = (email: string, serverData: any) => {
-    setCloudUserEmail(email);
-    localStorage.setItem('fitlife_cloud_user_email', email);
-
-    if (serverData) {
-      if (serverData.profile) {
-        setProfile(serverData.profile);
-        localStorage.setItem('fitlife_user_profile', JSON.stringify(serverData.profile));
-      }
-      if (serverData.water_log !== undefined) {
-        localStorage.setItem('fitlife_water_log', serverData.water_log.toString());
-      }
-      if (serverData.steps_log !== undefined) {
-        localStorage.setItem('fitlife_steps_log', serverData.steps_log.toString());
-      }
-      if (serverData.weight_logs) {
-        localStorage.setItem('fitlife_weight_logs', JSON.stringify(serverData.weight_logs));
-      }
-      if (serverData.points !== undefined) {
-        localStorage.setItem('fitlife_points', serverData.points.toString());
-      }
-      if (serverData.streak !== undefined) {
-        localStorage.setItem('fitlife_streak', serverData.streak.toString());
-      }
-      if (serverData.challenges) {
-        localStorage.setItem('fitlife_challenges', JSON.stringify(serverData.challenges));
-      }
-      if (serverData.habits) {
-        localStorage.setItem('fitlife_habits_tracker', JSON.stringify(serverData.habits));
-      }
-
-      window.dispatchEvent(new Event('fitlife_state_updated'));
-    } else {
-      syncStateToCloud(email);
-    }
-  };
-
-  const handleLogout = () => {
-    setCloudUserEmail(null);
-    localStorage.removeItem('fitlife_cloud_user_email');
-  };
-
-  const handleForceSync = async () => {
-    await syncStateToCloud();
-  };
 
   const handleOnboardingComplete = (newProfile: UserProfile) => {
     setProfile(newProfile);
@@ -305,8 +190,8 @@ export default function App() {
             activeTab={activeTab}
             onTabChange={setActiveTab}
             onReset={handleReset}
-            cloudUserEmail={cloudUserEmail}
-            onOpenSyncModal={() => setShowSyncModal(true)}
+            colorTheme={colorTheme}
+            onChangeColorTheme={setColorTheme}
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -383,17 +268,6 @@ export default function App() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Cloud Sync Center Modal Panel */}
-          <CloudSyncModal
-            isOpen={showSyncModal}
-            onClose={() => setShowSyncModal(false)}
-            cloudUserEmail={cloudUserEmail}
-            onLoginSuccess={handleLoginSuccess}
-            onLogout={handleLogout}
-            onForceSync={handleForceSync}
-            isSyncing={isSyncing}
-          />
         </motion.div>
       )}
     </AnimatePresence>

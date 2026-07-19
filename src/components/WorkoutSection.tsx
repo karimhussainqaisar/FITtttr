@@ -3,6 +3,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { EXERCISE_LIBRARY, WORKOUT_PROGRAMS } from '../data/exercises';
 import { Exercise, WorkoutProgram } from '../types';
 import { Dumbbell, Eye, Timer, Flame, CheckCircle, FlameKindling, Info, Library } from 'lucide-react';
+import { 
+  MuscleGroupDiagram, 
+  ExerciseVisualizer, 
+  CalorieBurnInfographic, 
+  FormDoDontCards, 
+  ProgramDashboardInfographic 
+} from './WorkoutInfographics';
 
 export default function WorkoutSection() {
   const [activeTab, setActiveTab] = useState<'programs' | 'library'>('programs');
@@ -35,7 +42,7 @@ export default function WorkoutSection() {
             onClick={() => { setActiveTab('programs'); setSelectedProgram(null); }}
             className={`px-4 py-2 text-sm font-bold rounded-xl transition flex items-center gap-2 ${
               activeTab === 'programs'
-                ? 'bg-emerald-500 text-white shadow-md'
+                ? 'bg-brand-primary text-white shadow-md'
                 : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
@@ -46,7 +53,7 @@ export default function WorkoutSection() {
             onClick={() => { setActiveTab('library'); setSelectedExercise(null); }}
             className={`px-4 py-2 text-sm font-bold rounded-xl transition flex items-center gap-2 ${
               activeTab === 'library'
-                ? 'bg-emerald-500 text-white shadow-md'
+                ? 'bg-brand-primary text-white shadow-md'
                 : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
             }`}
           >
@@ -79,7 +86,7 @@ export default function WorkoutSection() {
           {/* Workout programs side panel list */}
           <div className="lg:col-span-1 space-y-4 max-h-[600px] overflow-y-auto pr-2">
             <h3 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
-              <FlameKindling className="w-5 h-5 text-emerald-500" /> Active Splits
+              <FlameKindling className="w-5 h-5 text-brand-primary" /> Active Splits
             </h3>
             {WORKOUT_PROGRAMS.map(prog => (
               <button
@@ -88,7 +95,7 @@ export default function WorkoutSection() {
                 onClick={() => setSelectedProgram(prog)}
                 className={`w-full text-left p-4 rounded-xl border transition flex flex-col justify-between h-40 ${
                   selectedProgram?.id === prog.id
-                    ? 'border-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10'
+                    ? 'border-brand-primary bg-brand-light/20 dark:bg-brand-light/10'
                     : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:border-neutral-300'
                 }`}
               >
@@ -97,7 +104,7 @@ export default function WorkoutSection() {
                     <span className={`px-2 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-full ${
                       prog.category === 'muscle_gain'
                         ? 'bg-sky-500/10 text-sky-600'
-                        : 'bg-emerald-500/10 text-emerald-600'
+                        : 'bg-brand-light text-brand-primary'
                     }`}>
                       {prog.category.replace('_', ' ')}
                     </span>
@@ -109,7 +116,7 @@ export default function WorkoutSection() {
 
                 <div className="flex justify-between items-center border-t border-neutral-100 dark:border-neutral-850 pt-2 text-[10px] text-neutral-400 font-mono">
                   <span>Split Cycle: <span className="font-bold">{prog.durationDays} Days</span></span>
-                  <span className="text-emerald-500 font-bold hover:underline">Launch Routine →</span>
+                  <span className="text-brand-primary font-bold hover:underline">Launch Routine →</span>
                 </div>
               </button>
             ))}
@@ -131,7 +138,7 @@ export default function WorkoutSection() {
                       <span className={`px-2 py-0.5 text-[10px] font-black tracking-wider uppercase rounded-full ${
                         selectedProgram.category === 'muscle_gain'
                           ? 'bg-sky-500/10 text-sky-600'
-                          : 'bg-emerald-500/10 text-emerald-600'
+                          : 'bg-brand-light text-brand-primary'
                       }`}>
                         {selectedProgram.category.replace('_', ' ')}
                       </span>
@@ -140,9 +147,12 @@ export default function WorkoutSection() {
                     </div>
                     <div className="text-right font-mono">
                       <p className="text-sm text-neutral-400">FREQUENCY</p>
-                      <p className="text-xl font-bold text-emerald-500">{selectedProgram.frequency}</p>
+                      <p className="text-xl font-bold text-brand-primary">{selectedProgram.frequency}</p>
                     </div>
                   </div>
+
+                  {/* Scientific Program Dashboard & Activation Analytics */}
+                  <ProgramDashboardInfographic program={selectedProgram} />
 
                   {/* Exercises Checklist */}
                   <div>
@@ -165,7 +175,7 @@ export default function WorkoutSection() {
                             </div>
 
                             <div className="flex justify-between items-center border-t border-neutral-100 dark:border-neutral-800/80 pt-3 mt-3">
-                              <span className="text-xs font-bold font-mono text-emerald-500">
+                              <span className="text-xs font-bold font-mono text-brand-primary">
                                 {item.sets && item.reps ? `${item.sets} Sets x ${item.reps} Reps` : `${item.durationMin} Min Duration`}
                               </span>
                               <button
@@ -177,7 +187,7 @@ export default function WorkoutSection() {
                                     setSelectedExercise(obj);
                                   }
                                 }}
-                                className="text-[10px] font-bold text-neutral-400 hover:text-emerald-500 flex items-center gap-1 transition"
+                                className="text-[10px] font-bold text-neutral-400 hover:text-brand-primary flex items-center gap-1 transition"
                               >
                                 <Eye className="w-3.5 h-3.5" /> Guide
                               </button>
@@ -202,9 +212,9 @@ export default function WorkoutSection() {
         /* Exercise library database tab */
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {/* Exercises directory sidebar */}
-          <div className="md:col-span-1 space-y-4 max-h-[500px] overflow-y-auto pr-2">
+          <div className="md:col-span-1 space-y-4 max-h-[600px] overflow-y-auto pr-2">
             <h3 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
-              <Library className="w-5 h-5 text-emerald-500" /> Movement Library
+              <Library className="w-5 h-5 text-brand-primary" /> Movement Library
             </h3>
             <div className="space-y-2">
               {filteredExercises.map(ex => (
@@ -214,7 +224,7 @@ export default function WorkoutSection() {
                   onClick={() => setSelectedExercise(ex)}
                   className={`w-full text-left p-3 rounded-xl border transition flex items-center justify-between ${
                     selectedExercise?.id === ex.id
-                      ? 'border-emerald-500 bg-emerald-500/5'
+                      ? 'border-brand-primary bg-brand-light/20 dark:bg-brand-light/10'
                       : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:border-neutral-300'
                   }`}
                 >
@@ -243,21 +253,38 @@ export default function WorkoutSection() {
                 >
                   <div className="flex justify-between items-start border-b border-neutral-100 dark:border-neutral-800 pb-4 flex-wrap gap-4">
                     <div>
-                      <span className="px-2 py-0.5 text-[10px] font-black tracking-wider uppercase bg-emerald-500/10 text-emerald-600 rounded-full">
+                      <span className="px-2 py-0.5 text-[10px] font-black tracking-wider uppercase bg-brand-light text-brand-primary rounded-full">
                         {selectedExercise.category} Training
                       </span>
                       <h3 className="text-2xl font-black text-neutral-800 dark:text-neutral-100 mt-2">{selectedExercise.name}</h3>
                       <p className="text-sm text-neutral-500 mt-1">{selectedExercise.description}</p>
                     </div>
-                    <div className="flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-3 py-1.5 rounded-xl font-mono text-xs font-bold">
-                      <Flame className="w-4 h-4 fill-emerald-500/20" /> {selectedExercise.caloriesBurnedPerMin} cal/min
+                    <div className="flex items-center gap-2 bg-brand-light text-brand-primary px-3 py-1.5 rounded-xl font-mono text-xs font-bold">
+                      <Flame className="w-4 h-4 fill-brand-primary/20" /> {selectedExercise.caloriesBurnedPerMin} cal/min
                     </div>
                   </div>
 
+                  {/* HIGHLY VISUAL INFOGRAPHICS BENTO GRID */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Visualizer and Heatmap Row */}
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Kinetic Demonstration</span>
+                      <ExerciseVisualizer exerciseId={selectedExercise.id} />
+                    </div>
+                    <div className="space-y-4">
+                      <span className="text-[10px] font-black uppercase text-neutral-400 tracking-wider">Biomechanical Load</span>
+                      <MuscleGroupDiagram muscle={selectedExercise.targetMuscle} />
+                    </div>
+                  </div>
+
+                  {/* CALORIE BURN & PROJECTION GAUGES */}
+                  <CalorieBurnInfographic caloriesPerMin={selectedExercise.caloriesBurnedPerMin} />
+
+                  {/* BIO DETAILS & EXECUTION */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-150 dark:border-neutral-800 space-y-3">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
-                        <Dumbbell className="w-4 h-4 text-emerald-500" /> Bio details
+                        <Dumbbell className="w-4 h-4 text-brand-primary" /> Bio Mechanics
                       </h4>
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between">
@@ -277,22 +304,25 @@ export default function WorkoutSection() {
 
                     <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-150 dark:border-neutral-800 space-y-2 flex flex-col justify-center">
                       <div className="flex items-start gap-2.5 text-xs">
-                        <Info className="w-5 h-5 text-emerald-500 shrink-0" />
+                        <Info className="w-5 h-5 text-brand-primary shrink-0" />
                         <div>
-                          <p className="font-bold text-neutral-700 dark:text-neutral-200">Execution Tip</p>
+                          <p className="font-bold text-neutral-700 dark:text-neutral-200">Coaching Note</p>
                           <p className="text-neutral-500 dark:text-neutral-400 leading-relaxed mt-0.5">Control the negative (eccentric) part of the movement for at least 3 seconds to trigger maximum mechanical tension and target hypertrophy.</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
+                  {/* FORM GUIDELINES DO'S & DONT'S */}
+                  <FormDoDontCards exerciseId={selectedExercise.id} />
+
                   {/* Step by step directions */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-2">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">Step by Step Coaching Instructions</h4>
                     <ol className="space-y-2 text-xs">
                       {selectedExercise.instructions.map((step, sIdx) => (
                         <li key={sIdx} className="flex gap-3 bg-neutral-50/50 dark:bg-neutral-900/30 p-3 rounded-lg border border-neutral-100 dark:border-neutral-850">
-                          <span className="font-mono font-bold text-emerald-500 shrink-0">0{sIdx + 1}.</span>
+                          <span className="font-mono font-bold text-brand-primary shrink-0">0{sIdx + 1}.</span>
                           <span className="text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed">{step}</span>
                         </li>
                       ))}
@@ -301,7 +331,7 @@ export default function WorkoutSection() {
                 </motion.div>
               ) : (
                 <div className="bg-neutral-100/50 dark:bg-neutral-950/20 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800 p-12 text-center text-neutral-400 h-96 flex flex-col justify-center items-center">
-                  <Library className="w-12 h-12 text-neutral-300 mb-3" />
+                  <Library className="w-12 h-12 text-neutral-300 mb-3 animate-bounce" />
                   <p className="font-bold text-sm">No exercise selected</p>
                   <p className="text-xs text-neutral-400 mt-1">Select an exercise from our comprehensive Movement Library on the left to see instructions, muscles targeted, and execution tips.</p>
                 </div>

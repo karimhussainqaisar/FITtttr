@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Moon, Sun, Flame, Scale, LogOut, Menu, X, ShieldCheck, Cloud } from 'lucide-react';
+import { Sparkles, Moon, Sun, Flame, Scale, LogOut, Menu, X, ShieldCheck, Palette } from 'lucide-react';
 import { UserProfile } from '../types';
+import { MODERN_THEMES } from '../lib/theme';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -8,8 +9,8 @@ interface LayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   onReset: () => void;
-  cloudUserEmail: string | null;
-  onOpenSyncModal: () => void;
+  colorTheme: string;
+  onChangeColorTheme: (themeId: string) => void;
 }
 
 export default function Layout({ 
@@ -18,14 +19,16 @@ export default function Layout({
   activeTab, 
   onTabChange, 
   onReset,
-  cloudUserEmail,
-  onOpenSyncModal
+  colorTheme,
+  onChangeColorTheme
 }: LayoutProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('fitlife_theme');
     return (saved === 'light' || saved === 'dark') ? saved : 'dark';
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showColorSelector, setShowColorSelector] = useState(false);
+
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -59,12 +62,12 @@ export default function Layout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo brand */}
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/10">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-primary to-brand-secondary flex items-center justify-center text-white shadow-md shadow-brand-glow/30">
               <Flame className="w-5 h-5 fill-white/15" />
             </div>
             <div>
               <h1 id="app_brand_name" className="text-base sm:text-lg font-black tracking-tight text-neutral-900 dark:text-neutral-100">
-                FitLife <span className="text-emerald-500 font-extrabold font-mono">AI</span>
+                FitLife <span className="text-brand-primary font-extrabold font-mono">AI</span>
               </h1>
               <span className="text-[9px] font-mono text-neutral-400 block -mt-1 leading-none uppercase tracking-widest font-black">Smart Diet & Trainer</span>
             </div>
@@ -91,33 +94,64 @@ export default function Layout({
           )}
 
           {/* Utility selectors */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {profile && (
               <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl text-[10px] font-mono text-neutral-500">
-                <Scale className="w-3.5 h-3.5 text-emerald-500" />
+                <Scale className="w-3.5 h-3.5 text-brand-primary" />
                 <span>{profile.weight} kg → {profile.targetWeight} kg</span>
               </div>
             )}
 
-            {/* Cloud Sync Button */}
-            {profile && (
+            {/* UI Theme Palette Selector */}
+            <div className="relative">
               <button
-                id="btn_cloud_sync_toggle"
-                onClick={onOpenSyncModal}
-                className={`px-2.5 py-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-semibold ${
-                  cloudUserEmail
-                    ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10'
-                    : 'border-neutral-250 dark:border-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-150 hover:bg-neutral-100 dark:hover:bg-neutral-900'
-                }`}
-                title={cloudUserEmail ? `Logged in as ${cloudUserEmail}` : 'Sync across devices'}
+                id="btn_color_theme_selector"
+                onClick={() => setShowColorSelector(!showColorSelector)}
+                className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-150 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all flex items-center justify-center gap-1.5"
+                title="Change Color Theme"
               >
-                <Cloud className={`w-4 h-4 ${cloudUserEmail ? 'text-emerald-500 fill-emerald-500/10' : ''}`} />
-                <span className="hidden sm:inline">
-                  {cloudUserEmail ? 'Synced' : 'Cloud Sync'}
-                </span>
-                {cloudUserEmail && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                <Palette className="w-4 h-4 text-brand-primary" />
+                <span className="hidden sm:inline text-xs font-bold font-mono">Theme Color</span>
               </button>
-            )}
+
+              {showColorSelector && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowColorSelector(false)} />
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-neutral-900 border border-neutral-250 dark:border-neutral-800 rounded-2xl shadow-xl p-4 z-50 space-y-3">
+                    <div className="flex justify-between items-center pb-2 border-b border-neutral-100 dark:border-neutral-800">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Select UI Color Preset</span>
+                      <button className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200" onClick={() => setShowColorSelector(false)}>
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1 max-h-60 overflow-y-auto pr-1">
+                      {MODERN_THEMES.map(t => (
+                        <button
+                          key={t.id}
+                          onClick={() => {
+                            onChangeColorTheme(t.id);
+                            setShowColorSelector(false);
+                          }}
+                          className={`flex items-center gap-2.5 w-full p-2 rounded-xl border text-left transition-all ${
+                            colorTheme === t.id
+                              ? 'border-brand-primary bg-brand-light'
+                              : 'border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-850'
+                          }`}
+                        >
+                          <span 
+                            className="w-4 h-4 rounded-full flex-shrink-0 border border-black/10 shadow-sm" 
+                            style={{ background: `linear-gradient(135deg, ${t.primaryHex}, ${t.secondaryHex})` }}
+                          />
+                          <span className="text-xs font-bold text-neutral-700 dark:text-neutral-200">
+                            {t.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Theme switcher */}
             <button
@@ -158,7 +192,7 @@ export default function Layout({
                   }}
                   className={`w-full text-left p-3 rounded-xl font-bold text-sm transition ${
                     activeTab === item.id
-                      ? 'bg-emerald-500 text-white shadow-md'
+                      ? 'bg-brand-primary text-white shadow-md'
                       : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                   }`}
                 >
@@ -193,7 +227,7 @@ export default function Layout({
       <footer className="border-t border-neutral-200 dark:border-neutral-850 bg-white dark:bg-neutral-950 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
           <div className="flex items-center justify-center gap-2 text-xs font-mono font-bold text-neutral-400 dark:text-neutral-500">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <ShieldCheck className="w-4 h-4 text-brand-primary" />
             <span>CLINICAL HEALTH DISCLAIMER & RESPONSIBILITY</span>
           </div>
           <p className="text-[10px] leading-relaxed text-neutral-400 dark:text-neutral-500 max-w-2xl mx-auto">
